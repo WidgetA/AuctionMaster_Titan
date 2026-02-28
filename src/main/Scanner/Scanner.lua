@@ -484,10 +484,11 @@ function vendor.Scanner:PlaceAuctionBid(ahType, auctions, possibleGap)
 				if (bidAmount and bidAmount > 0) then
 					bid = bidAmount + (minIncrement or 0)
 				end
-				if (info.name == name and info.count == count and info.minBid == minBid and 
+				if (info.name == name and info.count == count and info.minBid == minBid and
 						info.buyout == buyout and info.bid >= bid) then
 					vendor.Vendor:Print(L["Placing bid with %s on %s x \"%s\""]:format(vendor.Format.FormatMoney(info.bid, true), count, name))
 					vendor.AuctionHouse:AddAction(vendor.AuctionHouse.ACTION_BID, GetAuctionItemLink(ahType, idx))
+					-- [Titan Migration] 不调用 SetSelectedAuctionItem，直接 PlaceAuctionBid（参考 Auctionator 实现）
 					PlaceAuctionBid(ahType, idx, info.bid)
 					bought = true
 					break

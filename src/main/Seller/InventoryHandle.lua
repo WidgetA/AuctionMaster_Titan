@@ -29,6 +29,8 @@ local log = vendor.Debug:new("InventoryHandle")
 -- [Titan Migration] Container APIs moved to C_Container namespace
 local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
 local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+local PickupContainerItem = PickupContainerItem or C_Container.PickupContainerItem
+local SplitContainerItem = SplitContainerItem or C_Container.SplitContainerItem
 -- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
 local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
 	local info = C_Container.GetContainerItemInfo(bag, slot)

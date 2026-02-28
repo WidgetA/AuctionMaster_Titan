@@ -368,7 +368,17 @@ local function _PagedScan(self, info)
     self.page = 0
     local info = self.queryInfo
 
-    -- loop all pages
+    -- [Titan Migration] Configurable page limit to reduce server load under rate limiting.
+    -- Defaults to 1 (first page only). Callers can set queryInfo.maxPages for more.
+    local pageLimit = info.maxPages or 1
+
+    -- [Titan Migration] Sort by buyout price ascending so the first page contains the cheapest listings.
+    -- SortAuctionItems toggles direction on each call, so we must clear the sort stack first
+    -- to ensure it always starts with ascending order.
+    SortAuctionClearSort("list")
+    SortAuctionItems("list", "buyout")
+
+    -- loop pages up to pageLimit
     while (self.running) do
 
         _BlockForCanSendAuctionQuery(self)
@@ -376,35 +386,31 @@ local function _PagedScan(self, info)
         if (self.running) then
 
             self.pendingAuctionListUpdate = true
-            log:Debug("QueryAuctions name [%s] exactMatch [%s]", name, info.exactMatch)
+            log:Debug("QueryAuctions name [%s] exactMatch [%s] page [%s] pageLimit [%s]", info.name, info.exactMatch, self.page, pageLimit)
 
             local filterData;
-            --			if (info.classIndex and info.subclassIndex and subSubCategoryIndex) then
-            --				filterData = AuctionCategories[info.classIndex].subCategories[info.subclassIndex].subCategories[subSubCategoryIndex].filters;
-
-            -- FIXME
-            --			if (info.classIndex and info.subclassIndex) then
-            --				filterData = AuctionCategories[info.classIndex].subCategories[info.subclassIndex].filters;
-            --			elseif (info.classIndex) then
-            --				filterData = AuctionCategories[info.classIndex].filters;
-            --			else
-            --				-- not filtering by category, leave nil for all
-            --			end
 
             QueryAuctionItems(info.name, tonumber(info.minLevel), tonumber(info.maxLevel), self.page, info.isUsable, info.qualityIndex, false, info.exactMatch, filterData);
 
             _BlockForAuctionListUpdate(self)
-            _BlockForCanSendAuctionQuery(self)
+            -- [Titan Migration] Removed redundant _BlockForCanSendAuctionQuery here.
+            -- The loop already has one at the top (line 381) which covers multi-page scans.
+            -- Waiting here was unnecessary and caused a 12-second timeout on single-page searches.
 
             if (self.running) then
                 if (not _ReadPage(self)) then
-                    log:Debug("Exit loop")
+                    log:Debug("Exit loop - no more pages")
                     -- all auctions has been read
                     break
                 end
 
                 -- prepare next page
                 self.page = self.page + 1
+                -- [Titan Migration] Stop after reaching page limit (1-based: page 0 is the first page)
+                if (self.page >= pageLimit) then
+                    log:Debug("Exit loop - reached page limit [%s]", pageLimit)
+                    break
+                end
                 if (self.page > self.maxPages) then
                     break
                 end

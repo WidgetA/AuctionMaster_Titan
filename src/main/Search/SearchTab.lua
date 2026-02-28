@@ -190,9 +190,18 @@ local function _Scan(self)
     vendor.Scanner:FullScan(self.scanModules, _FinishFullScan, self, self)
 end
 
+-- [Titan Migration] PlaceAuctionBid 是受保护函数，不能从 AuctionFrame 内的子按钮直接调用
+-- （硬件事件无法穿透受保护的暴雪 UI 框架）。通过 BuyDialog 弹窗确认，其按钮 parent
+-- 为 UIParent，可正常调用受保护函数。同时跳过原有的 BuyScan 二次扫描流程。
+local function _GetBuyDialog(self)
+    if (not self.buyDialog) then
+        self.buyDialog = vendor.BuyDialog:new()
+    end
+    return self.buyDialog
+end
+
 local function _Bid(self)
     log:Debug("_Bid")
-    local rows = wipe(self.tmpList1)
     local auctions = wipe(self.buyTable)
     for _, row in pairs(self.itemModel:GetSelectedItems()) do
         local _, itemLink, _, name, _, count, minBid, minIncrement, buyout, bidAmount, _, _, index = self.itemModel:Get(row)
@@ -200,44 +209,25 @@ local function _Bid(self)
         if (bidAmount and bidAmount > 0) then
             bid = bidAmount + (minIncrement or 0)
         end
-        local info = { itemLink = itemLink, name = name, count = count, bidAmount = bidAmount, minBid = minBid, buyout = buyout, bid = bid, index = index, minIncrement = minIncrement, doBid = true, reason = L["Bid"] }
+        local info = { itemLink = itemLink, name = name, count = count, bidAmount = bidAmount, minBid = minBid, buyout = buyout, bid = bid, index = index, minIncrement = minIncrement, doBid = true, reason = L["Bid"], row = row }
         log:Debug("name [%s] minBid [%s] minIncrement [%s]", name, minBid, minIncrement)
-        table.insert(rows, row)
         table.insert(auctions, info)
     end
-    self.itemModel:RemoveRows(rows)
-    local n = #auctions
-    if (self.getAll) then
-        --vendor.Scanner:PlaceAuctionBid("list", auctions, self.possibleGap)
-        local task = vendor.GetAllPlaceAuctionTask:new(auctions, false)
-        vendor.TaskQueue:AddTask(task)
-    else
-        vendor.Scanner:BuyScan(auctions)
-    end
-    self.possibleGap = self.possibleGap + n
+    -- [Titan Migration] 不再预先移除行，改为购买成功后由 BuyDialog 回调移除
+    _GetBuyDialog(self):ShowForDirectBuy("list", auctions, self.possibleGap, self.itemModel)
 end
 
 local function _Buyout(self)
     log:Debug("_Buyout")
-    local rows = wipe(self.tmpList1)
     local auctions = wipe(self.buyTable)
     for _, row in pairs(self.itemModel:GetSelectedItems()) do
         local _, itemLink, _, name, _, count, minBid, minIncrement, buyout, _, _, _, index = self.itemModel:Get(row)
         log:Debug("name [%s] minBid [%s] minIncrement [%s]", name, minBid, minIncrement)
-        local info = { name = name, itemLink = itemLink, count = count, bidAmount = bidAmount, minBid = minBid, buyout = buyout, bid = buyout, index = index, doBuyout = true, reason = L["Buy"] }
-        tinsert(rows, row)
+        local info = { name = name, itemLink = itemLink, count = count, bidAmount = bidAmount, minBid = minBid, buyout = buyout, bid = buyout, index = index, doBuyout = true, reason = L["Buy"], row = row }
         tinsert(auctions, info)
     end
-    local n = #auctions
-    self.itemModel:RemoveRows(rows)
-    if (self.getAll) then
-        --    	vendor.Scanner:PlaceAuctionBid("list", auctions, self.possibleGap)
-        local task = vendor.GetAllPlaceAuctionTask:new(auctions, false)
-        vendor.TaskQueue:AddTask(task)
-    else
-        vendor.Scanner:BuyScan(auctions)
-    end
-    self.possibleGap = self.possibleGap + n
+    -- [Titan Migration] 不再预先移除行，改为购买成功后由 BuyDialog 回调移除
+    _GetBuyDialog(self):ShowForDirectBuy("list", auctions, self.possibleGap, self.itemModel)
 end
 
 local function _InitFrame(self)

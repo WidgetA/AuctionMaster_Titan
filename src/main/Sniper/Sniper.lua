@@ -279,11 +279,13 @@ function vendor.Sniper:SnipeForItem(auctionType, index, bid, buyout, name, count
 		log:Debug("do bid");
 		AuctionFrame.buyoutPrice = nil;
 		vendor.AuctionHouse:AddAction(vendor.AuctionHouse.ACTION_BID, GetAuctionItemLink(auctionType, idx))
+		-- [Titan Migration] 不调用 SetSelectedAuctionItem，直接 PlaceAuctionBid（参考 Auctionator 实现）
 		PlaceAuctionBid(auctionType, idx, bid);
 	elseif (buyout and buyout > 0) then
 		log:Debug("do buy index: "..idx.." buyout: "..buyout);
 		AuctionFrame.buyoutPrice = buyout;
 		vendor.AuctionHouse:AddAction(vendor.AuctionHouse.ACTION_BID, GetAuctionItemLink(auctionType, idx))
+		-- [Titan Migration] 不调用 SetSelectedAuctionItem，直接 PlaceAuctionBid（参考 Auctionator 实现）
 		PlaceAuctionBid(auctionType, idx, AuctionFrame.buyoutPrice);
 	end
 end

@@ -66,7 +66,42 @@
 - **教训**：从中学到了什么
 -->
 
-（暂无，随开发积累）
+### [2026-02-28] 尝试 1：SetSelectedAuctionItem + PlaceAuctionBid 同一次点击
+- **目标**：解决 error 467
+- **做法**：在 `_OnOk` 中 `PlaceAuctionBid` 前加 `SetSelectedAuctionItem(ahType, info.index)`
+- **结果**：单件购买大概率 467，小概率能通过
+- **教训**：仅添加 SetSelectedAuctionItem 不够，可能需要分不同事件调用
+
+### [2026-02-28] 尝试 2：触发原生 StaticPopup_Show("BUYOUT_AUCTION")
+- **目标**：借助原生弹窗的 OnAccept 调用 PlaceAuctionBid（Blizzard 代码 = 安全上下文）
+- **做法**：`_OnOk` 中不直接调用 PlaceAuctionBid，改为 `StaticPopup_Show("BUYOUT_AUCTION")`
+- **结果**：弹窗没出现（被 BuyDialog 遮挡），下单也没成功也没报错
+- **教训**：从插件代码调用 StaticPopup_Show 创建的弹窗是 tainted 的，OnAccept 内的受保护函数被静默拦截
+
+### [2026-02-28] 尝试 3：先隐藏 BuyDialog 再弹原生 Popup
+- **目标**：解决尝试 2 中弹窗被遮挡的问题
+- **做法**：`_OnOk` 中先 `self:Hide()`，再 `StaticPopup_Show("BUYOUT_AUCTION")`
+- **结果**：弹窗可见了，但点确定没有任何效果（不成功也不报错）
+- **教训**：确认了 taint 是根本原因——插件代码触发的 StaticPopup 整条执行链都是 tainted 的，即使用户物理点击 Accept，OnAccept 中的 PlaceAuctionBid 仍然被拦截
+
+### [2026-02-28] 尝试 4：直接调用 + GetAuctionItemInfo 验证
+- **目标**：排除数据过期的可能性，确认 index 和 buyout 数据有效
+- **做法**：`_OnOk` 中先 `GetAuctionItemInfo` 验证拍卖品数据，打印详细信息，再 `SetSelectedAuctionItem` + `PlaceAuctionBid`
+- **结果**：数据验证通过（`Buying: 青铜锭 index=50 buyout=6800 bid=6800`），仍然 467
+- **教训**：拍卖品数据有效，467 不是因为数据过期或 index 错位
+
+### [2026-02-28] 尝试 5：预选分离（SetSelectedAuctionItem 在 ShowForDirectBuy，PlaceAuctionBid 在 _OnOk）
+- **目标**：模拟原生 UI 三步流程——选择和购买在不同点击事件中
+- **做法**：`ShowForDirectBuy` 打开时调用 `SetSelectedAuctionItem` 预选，`_OnOk` 只调用 `PlaceAuctionBid`
+- **结果**：BuyDialog 弹窗不显示了，仍然 467
+- **教训**：`SetSelectedAuctionItem` 在 `ShowForDirectBuy` 中调用可能导致 Lua 错误阻止后续 frame:Show()；且分离事件本身不解决 467
+
+### 综合分析
+- 原生 UI 购买 100% 成功，插件购买大概率 467
+- 467 是服务端错误，不是客户端 taint 错误（ADDON_ACTION_BLOCKED 是另一个问题）
+- 所有从插件代码直接/间接调用 PlaceAuctionBid 的方式都会 467
+- 原生 UI 的完整流程：点击拍卖行列表行 → SetSelectedAuctionItem → 点击一口价按钮 → StaticPopup_Show("BUYOUT_AUCTION") → 点击确定 → PlaceAuctionBid（三次独立点击，全部在 Blizzard 安全代码中）
+- **下一步**：需要阅读 Blizzard_AuctionUI 源码，找出原生 UI 在 PlaceAuctionBid 之前还做了哪些我们没做的事情
 
 ## 开发工作流
 

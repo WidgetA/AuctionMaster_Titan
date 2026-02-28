@@ -30,6 +30,7 @@ local log = vendor.Debug:new("Seller")
 -- [Titan Migration] Container APIs moved to C_Container namespace
 local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
 local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+local PickupContainerItem = PickupContainerItem or C_Container.PickupContainerItem
 -- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
 local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
 	local info = C_Container.GetContainerItemInfo(bag, slot)
@@ -120,7 +121,8 @@ local function _Sell(itemLink, minBid, buyout, runTime, stackSize, stackCount)
         else
             vendor.AuctionHouse:AddAction(vendor.AuctionHouse.ACTION_SELL, itemLink)
             self.sellItemInfo = { minBid = minBid * stackSize, buyout = buyout * stackSize, runTime = runTime, stackSize = stackSize, stackCount = stackCount, itemLink = itemLink, timeLeft = runTime }
-            PostAuction(minBid * stackSize, buyout * stackSize, runTime, stackSize, stackCount)
+            -- [Titan Migration] PostAuction API changed: (minBid, buyoutPrice, runTime, warningAcknowledged), stackSize/stackCount params removed
+            PostAuction(minBid * stackSize, buyout * stackSize, runTime, true)
             vendor.clickAuctionSellItemButton()
         end
         ClearCursor()
@@ -1437,10 +1439,13 @@ end
 --[[
 	Hooks the PostAuction function to remember the prizes.
 --]]
-function vendor.Seller:PostAuction(minBid, buyoutPrize, runTime, stackSize, numStacks)
+-- [Titan Migration] PostAuction API changed: (minBid, buyoutPrice, runTime, warningAcknowledged), stackSize/numStacks params removed
+function vendor.Seller:PostAuction(minBid, buyoutPrize, runTime, warningAcknowledged)
     -- we want to remember the "minBid" and "buyoutPrice" for the next time
     local name, texture, count, quality, canUse, price, pricePerUnit, stackCount, totalCount = GetAuctionSellItemInfo()
-    log:Debug("PostAuction stackSize [%s] numStacks [%s] minBid [%s]", stackSize, numStacks, minBid)
+    -- [Titan Migration] Use count from GetAuctionSellItemInfo() instead of removed stackSize param
+    local stackSize = count or 1
+    log:Debug("PostAuction stackSize [%s] minBid [%s]", stackSize, minBid)
     if (name) then
         -- unfortunately we need the itemLink, we have to scan the inventory
         local itemLink = _FindInventoryItemLink(name);

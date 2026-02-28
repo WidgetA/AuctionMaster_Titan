@@ -213,6 +213,37 @@ local function _CreateButton(self)
     but:SetScript("OnClick", function(but) but.ctrl.mainMenu:Show() end)
 end
 
+-- [Titan Migration] 创建 error 467 冷却倒计时框
+local COOLDOWN_DURATION = 40
+local function _CreateCooldownTimer(self)
+    local frame = CreateFrame("Frame", nil, AuctionFrame)
+    frame:SetSize(50, 22)
+    frame:SetPoint("LEFT", self.but, "RIGHT", 2, 0)
+    frame:Hide()
+
+    local bg = frame:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0, 0, 0, 0.7)
+
+    local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    text:SetPoint("CENTER")
+    text:SetTextColor(1, 0.2, 0.2)
+
+    frame:SetScript("OnUpdate", function(f)
+        if f.endTime then
+            local remaining = f.endTime - GetTime()
+            if remaining > 0 then
+                text:SetFormattedText("%.1fs", remaining)
+            else
+                f.endTime = nil
+                f:Hide()
+            end
+        end
+    end)
+
+    self.cooldownTimer = frame
+end
+
 --[[
 	Returns the frame for the given tab number
 --]]
@@ -441,6 +472,7 @@ function vendor.AuctionHouse:OnEnable()
     self:RegisterEvent("TRADE_SKILL_SHOW")
     self:SecureHook("AuctionFrameTab_OnClick");
     _CreateButton(self)
+    _CreateCooldownTimer(self)
     self.bugfixTooltip = CreateFrame("GameTooltip", "AMBugfixTooltip", UIParent, "GameTooltipTemplate")
     self.mainMenu = vendor.PopupMenu:new("VendorMainMenu", CMDS, self)
     --self.portraitMenu = vendor.PopupMenu:new("VendorPortraitMenu", FAST_CMDS, self)
@@ -623,8 +655,29 @@ end
 --[[
 	Handles error messages to recognize failures during auction actions
 --]]
-function vendor.AuctionHouse:UI_ERROR_MESSAGE(event, message)
-    log:Debug("received emessage: %s", message)
+function vendor.AuctionHouse:UI_ERROR_MESSAGE(event, errorTypeOrMessage, messageOrNil)
+    -- [Titan Migration] 兼容新旧两种事件参数格式：
+    -- 旧版 (pre-7.0): UI_ERROR_MESSAGE(message)
+    -- 新版 (7.0+):    UI_ERROR_MESSAGE(errorType, message)
+    local errorType, message
+    if messageOrNil then
+        errorType = errorTypeOrMessage
+        message = messageOrNil
+    else
+        message = errorTypeOrMessage
+    end
+    log:Debug("received emessage: type=%s msg=%s", tostring(errorType), tostring(message))
+
+    -- [Titan Migration] 检测 error 467 (ERR_AUCTION_DATABASE_ERROR) 并启动冷却倒计时
+    if (errorType == 467)
+        or (ERR_AUCTION_DATABASE_ERROR and message == ERR_AUCTION_DATABASE_ERROR) then
+        log:Debug("error 467 detected, starting %d second cooldown", COOLDOWN_DURATION)
+        if self.cooldownTimer then
+            self.cooldownTimer.endTime = GetTime() + COOLDOWN_DURATION
+            self.cooldownTimer:Show()
+        end
+    end
+
     if (message == ERR_ITEM_NOT_FOUND) then
         _StopWait(self)
         _TriggerAction(self, false)
@@ -641,6 +694,14 @@ function vendor.AuctionHouse:UI_ERROR_MESSAGE(event, message)
         _StopWait(self)
         _TriggerAction(self, false)
     end
+end
+
+--[[
+	Returns true if the error 467 cooldown is active.
+--]]
+-- [Titan Migration] 供其他模块查询冷却状态
+function vendor.AuctionHouse:IsCooldownActive()
+    return self.cooldownTimer and self.cooldownTimer.endTime and self.cooldownTimer.endTime > GetTime()
 end
 
 --[[
