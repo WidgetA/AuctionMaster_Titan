@@ -155,7 +155,7 @@ end
 --]]
 local function _InitDescriptors(self)
 	self.descriptors = {
-		[vendor.ScanSetItemModel.UNDERCUT] = {type = "texture", title = L["Undercut"], arg = self, order = 5, normalTexture = "Interface\\Addons\\AuctionMaster\\src\\resources\\Button-Undercut-Up", pushedTexture = "Interface\\Addons\\AuctionMaster\\src\\resources\\Button-Undercut-Down", normalTexCoord = {0, 0.5, 0, 0.5}, pushedTexCoord = {0, 0.5, 0, 0.5}, clickCallback = _OnUndercutClick, updateCallback = _OnUndercutUpdate, tooltip = L["Undercut the given auction"]};
+		[vendor.ScanSetItemModel.UNDERCUT] = {type = "texture", title = L["Undercut"], arg = self, order = 5, normalTexture = "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Button-Undercut-Up", pushedTexture = "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Button-Undercut-Down", normalTexCoord = {0, 0.5, 0, 0.5}, pushedTexCoord = {0, 0.5, 0, 0.5}, clickCallback = _OnUndercutClick, updateCallback = _OnUndercutUpdate, tooltip = L["Undercut the given auction"]};
 		[vendor.ScanSetItemModel.TEXTURE] = {type = "texture", title = L["Texture"], order = 10};
 		[vendor.ScanSetItemModel.NAME] = {type = "text", align = "LEFT", weight = 35, minWidth = 60, sortable = true, title = L["Name"], order = 12};
 		[vendor.ScanSetItemModel.COUNT] = {type = "number", align = "CENTER", weight = 10, minWidth = 20, sortable = true, title = L["Itms."], order = 13};

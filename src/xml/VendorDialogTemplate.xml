@@ -1,16 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Frame name="VendorDialogTemplate" virtual="true">
-		<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border">
-			<BackgroundInsets>
-				<AbsInset left="2" right="2" top="2" bottom="2"/>
-			</BackgroundInsets>
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-			<BorderColor r="1" g="0.675" b="0.125"/>
-		</Backdrop>
-		
+	<!-- [Titan Migration] Backdrop XML element removed in modern WoW; use BackdropTemplate + Lua OnLoad instead -->
+	<Frame name="VendorDialogTemplate" inherits="BackdropTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self:SetBackdrop({
+					edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+					edgeSize = 16,
+					insets = { left = 2, right = 2, top = 2, bottom = 2 },
+				})
+				self:SetBackdropBorderColor(1, 0.675, 0.125)
+			</OnLoad>
+		</Scripts>
+
 		<Layers>
 			<Layer level ="BACKGROUND">
 				<Texture file="Interface\ChatFrame\ChatFrameBackground">

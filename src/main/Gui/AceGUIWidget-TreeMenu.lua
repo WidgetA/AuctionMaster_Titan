@@ -521,7 +521,7 @@ do
 		self.localstatus.groups = {}
 		self.filter = false
 		
-		local treeframe = CreateFrame("Frame",nil,frame)
+		local treeframe = CreateFrame("Frame",nil,frame,"BackdropTemplate") -- [Titan Migration] Need BackdropTemplate for SetBackdrop
 		treeframe.obj = self
 		treeframe:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
 		treeframe:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)

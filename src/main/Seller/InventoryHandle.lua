@@ -26,6 +26,16 @@ local L = vendor.Locale.GetInstance()
 
 local log = vendor.Debug:new("InventoryHandle")
 
+-- [Titan Migration] Container APIs moved to C_Container namespace
+local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
+local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+-- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
+local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
+	local info = C_Container.GetContainerItemInfo(bag, slot)
+	if not info then return nil end
+	return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID
+end
+
 --[[ 
 	Creates a new instance.
 --]]

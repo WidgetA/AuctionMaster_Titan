@@ -44,7 +44,7 @@ local function _ApplyExtraLarge(self)
 	log:Debug("_ApplyExtraLarge")
 	if (self.db.profile.extraLarge) then
 		self.itemTable:SetDimensions(LARGE_WIDTH, HEIGHT, LARGE_X_OFF, Y_OFF)
-		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Bid-TopLeft");
+		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Bid-TopLeft")
 --		AuctionsItemButton:Hide()
 --		PriceDropDown:Hide()
 --		DurationDropDown:Hide()
@@ -55,7 +55,7 @@ local function _ApplyExtraLarge(self)
 --		AuctionsTabText:Hide()
 	else
 		self.itemTable:SetDimensions(SMALL_WIDTH, HEIGHT, SMALL_X_OFF, Y_OFF)
-		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-TopLeft");
+		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-TopLeft")
 --		AuctionsItemButton:Show()
 --		PriceDropDown:Show()
 --		DurationDropDown:Show()
@@ -518,7 +518,7 @@ function vendor.OwnAuctions:UpdateTabFrame()
 	AuctionFrameTopRight:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-TopRight")
 	AuctionFrameBotLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Bid-BotLeft")
 	AuctionFrameBot:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-Bot")
-	AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\UI-AuctionFrame-Auction-BotRight")
+	AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\UI-AuctionFrame-Auction-BotRight") -- [Titan Migration] 路径修复
 	if (self.db.profile.extraLarge) then
 		AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Bid-TopLeft")
 	else

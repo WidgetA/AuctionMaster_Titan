@@ -119,7 +119,7 @@ function vendor.Debug.prototype:CustomDebug(r, g, b, frame, delay, a1, ...)
 end
 
 function vendor.Debug.prototype:Debug(...)
-	local logging = getglobal("Logging")
+	local logging = _G["Logging"] -- [Titan Migration] getglobal → _G[]
 	self:CustomDebug(nil, nil, nil, nil, logging, ...)
 end
 

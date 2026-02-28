@@ -47,7 +47,7 @@ do
 		local onVertScroll = self.scrollFrame:GetScript("OnVerticalScroll")
 		onVertScroll(self.scrollFrame, FauxScrollFrame_GetOffset(self.scrollFrame))
 		-- check whether the scrollbar should be invisible
-		local scrollbar = getglobal(self.scrollFrame:GetName().."ScrollBar")
+		local scrollbar = _G[self.scrollFrame:GetName().."ScrollBar"] -- [Titan Migration] getglobal → _G[]
 		local min, max = scrollbar:GetMinMaxValues()
 		if (max and max == 0) then
 			scrollbar:Hide()
@@ -88,7 +88,7 @@ do
     	html:SetFontObject("h1", GameFontNormalLarge)
     	html:SetFontObject("h2", GameFontNormalLarge)
     	html:SetFontObject("h3", GameFontRed)
-    	html:SetFontObject(GameFontWhite)
+    	html:SetFontObject("p", GameFontWhite) -- [Titan Migration] SetFontObject now requires textType as first arg
     	html:SetSpacing("h1", 10)
     	html:SetSpacing("h2", 9)
     	html:SetSpacing("h3", 8)

@@ -27,6 +27,16 @@ local L = vendor.Locale.GetInstance()
 local self = vendor.Seller;
 local log = vendor.Debug:new("Seller")
 
+-- [Titan Migration] Container APIs moved to C_Container namespace
+local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
+local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+-- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
+local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
+	local info = C_Container.GetContainerItemInfo(bag, slot)
+	if not info then return nil end
+	return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID
+end
+
 vendor.Seller.PRIZE_MODEL_FIX = 1
 vendor.Seller.PRIZE_MODEL_MARKET = 2
 vendor.Seller.PRIZE_MODEL_CURRENT = 3
@@ -761,7 +771,12 @@ local function _DurationSelected(self, id)
 end
 
 local function _UpdateSalesFrame(name, texture, count)
-    SalesFrameItem:SetNormalTexture(texture)
+    -- [Titan Migration] SetNormalTexture no longer accepts nil
+    if texture then
+        SalesFrameItem:SetNormalTexture(texture)
+    else
+        SalesFrameItem:SetNormalTexture("")
+    end
     SalesFrameItemName:SetText(name)
     if (count > 1) then
         SalesFrameItemCount:SetText(count)
@@ -1000,7 +1015,7 @@ local function _CreateAuctionButtons(self)
     --vendor.GuiTools.AddTooltip(but, L["Scans the auction house for updating statistics and sniping items. Uses a fast \"GetAll\" scan, if the scan button is displayed with a green background. This is only possible each 15 minutes."])
 
     -- item to be sold
-    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster\\src\\resources\\ItemContainer", 256, 64)
+    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\ItemContainer", 256, 64)
     texture:SetPoint("TOPLEFT", 27, -92)
     local f = self.frame:CreateFontString("SalesFrameItemText", "ARTWORK", "GameFontHighlightSmall");
     f:SetText(L["Auction Item"]);
@@ -1115,7 +1130,7 @@ local function _CreateAuctionButtons(self)
     --self.auto:CreateFrame(self.frame)
 
     -- hrule to separate the sections
-    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster\\src\\resources\\HRule", 256, 16)
+    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\HRule", 256, 16)
     texture:SetPoint("TOPLEFT", 23, -255)
 
     -- starting prize
@@ -1127,7 +1142,7 @@ local function _CreateAuctionButtons(self)
     self.startPriceBut.controller = self;
     MoneyInputFrame_SetOnValueChangedFunc(self.startPriceBut, _OnMoneyChange)
     local frameName = self.startPriceBut:GetName();
-    local goldBut = getglobal(frameName .. "GoldButton");
+    local goldBut = _G[frameName .. "GoldButton"] -- [Titan Migration] getglobal → _G[]
     SalesFrameStartPriceGold:SetMaxLetters(6);
 
     -- buyout prize
@@ -1141,7 +1156,7 @@ local function _CreateAuctionButtons(self)
     SalesFrameBuyoutPriceGold:SetMaxLetters(6);
 
     -- hrule to separate the sections
-    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster\\src\\resources\\HRule", 256, 16)
+    local texture = vendor.GuiTools.CreateTexture(nil, self.frame, "ARTWORK", "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\HRule", 256, 16)
     texture:SetPoint("TOPLEFT", 23, -338)
 
     -- area for sell information
@@ -1361,13 +1376,13 @@ function vendor.Seller:UpdateTabFrame()
     --	AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\UI-AuctionFrame-Auction-BotRight")
 
     --AuctionFrameTopLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-TopLeft")
-    AuctionFrameTopLeft:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Seller-TopLeft")
-    AuctionFrameTop:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-Top")
-    AuctionFrameTopRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-TopRight")
-    AuctionFrameBotLeft:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Seller-BotLeft")
-    --AuctionFrameBotLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Auction-BotLeft")
-    AuctionFrameBot:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-Bot")
-    AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-BotRight")
+    -- [Titan Migration] AuctionMaster → AuctionMaster_Titan 路径修复
+    AuctionFrameTopLeft:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Seller-TopLeft")
+    AuctionFrameTop:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-Top")
+    AuctionFrameTopRight:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-TopRight")
+    AuctionFrameBotLeft:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Seller-BotLeft")
+    AuctionFrameBot:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-Bot")
+    AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-BotRight")
 
     --self.auto:SetItem(nil)
     log:Debug("Seller:UpdateTabFrame exit")

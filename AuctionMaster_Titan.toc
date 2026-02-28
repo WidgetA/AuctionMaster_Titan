@@ -1,14 +1,14 @@
-## Interface: 20501
-## Title: AuctionMaster
+## Interface: 38000
+## Title: AuctionMaster Titan Reforged
 ## Notes: Auction house selling and statistic tool.
-## Author: Udorn
+## Author: WidgetA, Claude (Anthropic)
 ## RequiredDeps:
 ## SavedVariables: VendorDb, AuctionMasterMiscDb
 ## DefaultState: enabled
 ## Dependancies:
 ## Version: 9.0.0
 ## X-Category: Auction
-## X-Feedback: http://www.curse.com/addons/wow/vendor
+## X-Feedback: https://github.com/WidgetA/AuctionMaster_Titan
 
 libs\Import.xml
 src\xml\Import.xml

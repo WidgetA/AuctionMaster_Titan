@@ -31,7 +31,7 @@ local CHECK_SIZE = 22
 
 --local SCROLLBAR_BACKGROUND_COLOR = {r = 0.12, g = 0.12, b = 0.12, a = 0.8}
 
-local SELECT_HIGHLIGHT = "Interface\\Addons\\AuctionMaster\\src\\resources\\Highlight1"
+local SELECT_HIGHLIGHT = "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Highlight1"
 
 local MAX_ID = 2147483647
 
@@ -412,9 +412,9 @@ local function _InitFrame(self)
 	rename:SetHeight(22)
 	rename:SetPoint("LEFT", save, "RIGHT", -2, 0)
 	rename:SetScript("OnClick", function(button) local dialog = StaticPopup_Show("SearchListRename", nil, nil, button.obj); dialog.data = button.obj end)
-	rename:SetNormalTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Rename-Up")
-	rename:SetPushedTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Rename-Down")
-	rename:SetDisabledTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Rename-Disabled")
+	rename:SetNormalTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Rename-Up")
+	rename:SetPushedTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Rename-Down")
+	rename:SetDisabledTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Rename-Disabled")
 	rename:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight", "ADD")
 	vendor.GuiTools.AddTooltip(rename, L["Rename a saved search"])
 
@@ -438,7 +438,7 @@ local function _InitFrame(self)
 	delete:SetScript("OnClick", _OnDeleteClick)
 	delete:SetNormalTexture("Interface\\Buttons\\CancelButton-Up")
 	delete:SetPushedTexture("Interface\\Buttons\\CancelButton-Down")
-	delete:SetDisabledTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\CancelButton-Disabled")
+	delete:SetDisabledTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\CancelButton-Disabled")
 	delete:SetHighlightTexture("Interface\\Buttons\\CancelButton-Highlight", "ADD")
 	delete:SetHitRectInsets(9, 7, -7, 10)
 	vendor.GuiTools.AddTooltip(delete, L["Delete a saved search"])

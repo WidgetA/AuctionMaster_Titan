@@ -119,10 +119,10 @@ local function _InitFrame(self)
 
 	bt = CreateFrame("Frame", frameName.."Bid", frame, "MoneyInputFrameTemplate");
 	bt:SetPoint("TOPRIGHT", self.itemName, "BOTTOMRIGHT", 10, -14);
-	local gold = getglobal(bt:GetName().."Gold");
+	local gold = _G[bt:GetName().."Gold"] -- [Titan Migration] getglobal → _G[]
 	gold:SetMaxLetters(6);
 	self.bid = bt;
-	
+
 	local buyoutLabel = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
 	buyoutLabel:SetText(L["Buyout:"]);
 	if ( GetLocale() == "zhTW" or GetLocale() == "zhCN" ) then
@@ -133,7 +133,7 @@ local function _InitFrame(self)
 
 	bt = CreateFrame("Frame", frameName.."Buyout", frame, "MoneyInputFrameTemplate");
 	bt:SetPoint("TOPRIGHT", self.bid, "BOTTOMRIGHT", 0, -14);
-	local gold = getglobal(bt:GetName().."Gold");
+	local gold = _G[bt:GetName().."Gold"] -- [Titan Migration] getglobal → _G[]
 	gold:SetMaxLetters(6);
 	self.buyout = bt;
 	
@@ -173,10 +173,11 @@ local function _InitFrame(self)
 	bt:SetScript("OnClick", function() frame:Hide(); end);	
 		
 	-- focus rules
-	MoneyInputFrame_SetPreviousFocus(self.bid, getglobal(self.buyout:GetName().."Copper"));
-	MoneyInputFrame_SetNextFocus(self.bid, getglobal(self.buyout:GetName().."Gold"));
-	MoneyInputFrame_SetPreviousFocus(self.buyout, getglobal(self.bid:GetName().."Copper"));
-	MoneyInputFrame_SetNextFocus(self.buyout, getglobal(self.bid:GetName().."Gold"));
+	-- [Titan Migration] getglobal → _G[]
+	MoneyInputFrame_SetPreviousFocus(self.bid, _G[self.buyout:GetName().."Copper"]);
+	MoneyInputFrame_SetNextFocus(self.bid, _G[self.buyout:GetName().."Gold"]);
+	MoneyInputFrame_SetPreviousFocus(self.buyout, _G[self.bid:GetName().."Copper"]);
+	MoneyInputFrame_SetNextFocus(self.buyout, _G[self.bid:GetName().."Gold"]);
 end
 
 --[[ 

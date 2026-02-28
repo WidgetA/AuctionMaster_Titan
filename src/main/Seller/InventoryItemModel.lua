@@ -36,6 +36,16 @@ vendor.InventoryItemModel.CURRENT_AUCTIONS = 6
 
 local log = vendor.Debug:new("InventoryItemModel")
 
+-- [Titan Migration] Container APIs moved to C_Container namespace
+local GetContainerNumSlots = GetContainerNumSlots or C_Container.GetContainerNumSlots
+local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+-- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
+local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
+	local info = C_Container.GetContainerItemInfo(bag, slot)
+	if not info then return nil end
+	return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID
+end
+
 --[[
 	Flattens the given line of data.
 --]]
@@ -65,7 +75,7 @@ end
 local function _ScanTooltip(self)
 	self.tooltip.isNotAuctionable = false
 	for i=1, self.tooltip:NumLines(), 1 do
-		local txt = getglobal("CanAuctionTooltipTextLeft"..i):GetText()
+		local txt = _G["CanAuctionTooltipTextLeft"..i]:GetText() -- [Titan Migration] getglobal → _G[]
 		if (txt) then
 			if (txt == ITEM_SOULBOUND or txt == ITEM_BIND_QUEST or txt == ITEM_ACCOUNTBOUND) then
 				self.tooltip.isNotAuctionable = true

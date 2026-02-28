@@ -23,6 +23,9 @@ local L = vendor.Locale.GetInstance()
 local self = vendor.Scanner;
 local log = vendor.Debug:new("Scanner")
 
+-- [Titan Migration] Container APIs moved to C_Container namespace
+local GetContainerItemLink = GetContainerItemLink or C_Container.GetContainerItemLink
+
 local SCANNER_VERSION = 8
 vendor.Scanner.QUALITY_INDEX = {
 	[0] = vendor.Format.ColorizeQuality(L["Poor"], 0), 
@@ -354,7 +357,7 @@ end
 --]]
 function vendor.Scanner:HideAuctionHouseBrowseButtons()
    	for i=1, NUM_BROWSE_TO_DISPLAY do
-      	local button = getglobal("BrowseButton"..i);
+      	local button = _G["BrowseButton"..i] -- [Titan Migration] getglobal → _G[]
       	button:Hide();
    	end
    	BrowsePrevPageButton:Disable();

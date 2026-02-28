@@ -69,7 +69,7 @@ local function _OnUpdate(frame)
     local _, allAllowed = CanSendAuctionQuery()
     allAllowed = allAllowed and vendor.Scanner.db.profile.getAll
     if (allAllowed and vendor.Scanner.SCAN_SPEED_OFF ~= vendor.Scanner.db.profile.scanSpeed) then
-        self.scan:SetNormalTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\UI-Panel-Button-Up-green")
+        self.scan:SetNormalTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\UI-Panel-Button-Up-green")
         self.scan:GetNormalTexture():SetTexCoord(2 / 128, 78 / 128, 2 / 32, 22 / 32)
         vendor.GuiTools.AddTooltip(self.scan, SCAN_TOOLTIP)
     else
@@ -653,11 +653,11 @@ local function _InitSnipers(self)
         local config = vendor.GuiTools.CreateButton(row, nil, 16, 16)
         config.sniper = sniper
         config:SetPoint("TOPRIGHT", -7, -2)
-        config:SetNormalTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Button-Settings-Up")
+        config:SetNormalTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Button-Settings-Up")
         config:GetNormalTexture():SetTexCoord(0, 0.5, 0, 0.5)
-        config:SetPushedTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Button-Settings-Down")
+        config:SetPushedTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Button-Settings-Down")
         config:GetPushedTexture():SetTexCoord(0, 0.5, 0, 0.5)
-        config:SetHighlightTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Button-Highlight", "ADD")
+        config:SetHighlightTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Button-Highlight", "ADD")
         config:SetScript("OnClick", function(this) this.sniper.config:Toggle() end)
 
         yOff = yOff - 24
@@ -696,12 +696,13 @@ function vendor.SearchTab:Hide()
 end
 
 function vendor.SearchTab:UpdateTabFrame()
-    AuctionFrameTopLeft:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchTab-TopLeft")
-    AuctionFrameTop:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchTab-Top")
-    AuctionFrameTopRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchTab-TopRight")
+    -- [Titan Migration] AuctionMaster → AuctionMaster_Titan 路径修复
+    AuctionFrameTopLeft:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchTab-TopLeft")
+    AuctionFrameTop:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchTab-Top")
+    AuctionFrameTopRight:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchTab-TopRight")
     AuctionFrameBotLeft:SetTexture("Interface\\AuctionFrame\\UI-AuctionFrame-Browse-BotLeft")
-    AuctionFrameBot:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-Bot")
-    AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\SearchScanFrame-BotRight")
+    AuctionFrameBot:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-Bot")
+    AuctionFrameBotRight:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\SearchScanFrame-BotRight")
 end
 
 function vendor.SearchTab:GetTabType()

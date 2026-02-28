@@ -471,7 +471,7 @@ local function _CreateTypeRow(self, typeFrame, prevType)
 	
 	-- select texture
 	texture = frame:CreateTexture()
-	texture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\Highlight1")
+	texture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Highlight1") -- [Titan Migration] 路径修复
 	texture:SetWidth(width)
 	texture:SetHeight(height)
 	texture:SetPoint("TOPLEFT", 0, 0)

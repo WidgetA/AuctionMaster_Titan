@@ -83,7 +83,7 @@ local function _ToggleClicked(but, arg1, arg2, checked)
 	_CallSet(item, checked, arg2)
 	-- hide the parent popup
 	for i=1,LIB_UIDROPDOWNMENU_MENU_LEVEL-1 do
-		getglobal("Lib_DropDownList"..i):Hide()
+		_G["Lib_DropDownList"..i]:Hide() -- [Titan Migration] getglobal → _G[]
 	end
 end
 

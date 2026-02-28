@@ -36,8 +36,8 @@ local CMDS_BACKGROUND = {r = 0.12, g = 0.12, b = 0.12, a = 0.8}
 local TOP_INSET = 3
 local RIGHT_INSET = 2
 local POPUP_BUT_WIDTH = 19
-local SELECT_HIGHLIGHT = "Interface\\Addons\\AuctionMaster\\src\\resources\\Highlight1"
-local NEUTRAL_HIGHLIGHT = "Interface\\Addons\\AuctionMaster\\src\\resources\\NeutralHighlight"
+local SELECT_HIGHLIGHT = "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\Highlight1" -- [Titan Migration] 路径修复
+local NEUTRAL_HIGHLIGHT = "Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\NeutralHighlight" -- [Titan Migration] 路径修复
 local GAP = 2
 
 -- Where do they get from?
@@ -59,7 +59,8 @@ end
 	Updates the arrow indicator of the given button.
 --]]
 local function _UpdateArrow(self, bt, sortId, ascending)
-	local arrow = getglobal(bt:GetName().."Arrow");
+	local arrow = _G[bt:GetName().."Arrow"] -- [Titan Migration] getglobal → _G[]
+	if not arrow then return end -- [Titan Migration] nil protection: template may lack Arrow child
 	if (bt.sortId == sortId) then
 		arrow:Show();
 		if (not ascending) then
@@ -617,7 +618,7 @@ local function _CreateScrollFrame(self)
 	_LayoutScrollFrame(self)
 	scroll:SetScript("OnVerticalScroll", function(but, value) FauxScrollFrame_OnVerticalScroll(but, value, but.obj.rowHeight, _ScrollUpdate) end)
 	scroll:SetScript("OnShow", function(but) _ScrollUpdate(but) end)
-	local scrollbar = getglobal(name.."ScrollBar")
+	local scrollbar = _G[name.."ScrollBar"] -- [Titan Migration] getglobal → _G[]
 	local scrollbg = scrollbar:CreateTexture(nil, "BACKGROUND")
 	scrollbg:SetAllPoints(scrollbar)
 	vendor.GuiTools.SetColor(scrollbg, CMDS_BACKGROUND)

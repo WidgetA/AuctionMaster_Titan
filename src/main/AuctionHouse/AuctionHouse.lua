@@ -222,7 +222,7 @@ local function _GetTabFrame(self, id)
         return self.frames[id]
     end
     log:Debug("_GetTabFrame global")
-    return getglobal("AuctionFrameTab" .. id)
+    return _G["AuctionFrameTab" .. id] -- [Titan Migration] getglobal → _G[]
 end
 
 --[[
@@ -248,7 +248,7 @@ local function _OnUpdate(self, diff)
     local doBlink = vendor.Scanner:IsScanning()
     if (doBlink) then
         -- OnLeave will reset it, so we do it each time
-        self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange_highlight")
+        self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange_highlight")
         if (not self.blinkTime) then
             self.blinkTime = 0.0
         end
@@ -262,7 +262,7 @@ local function _OnUpdate(self, diff)
     else
         if (self.blinkTime) then
             log:Debug("_OnUpdate set normal texture")
-            self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange")
+            self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange")
         end
         self.blinkTime = nil
         self.logoTexture:SetAlpha(1)
@@ -290,31 +290,31 @@ local function _CreateAuctionMasterLogo(self)
     self.logoBackground:SetHeight(55)
     self.logoBackground:SetTexCoord(0, 1, 0, 1)
     self.logoBackground:SetPoint("TOPLEFT", 0, 0)
-    self.logoBackground:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange_dark")
+    self.logoBackground:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange_dark")
 
     self.logoTexture = self.logo:CreateTexture("VendorLogoTexture", "ARTWORK")
     self.logoTexture:SetWidth(55)
     self.logoTexture:SetHeight(55)
     self.logoTexture:SetTexCoord(0, 1, 0, 1)
     self.logoTexture:SetPoint("TOPLEFT", 0, 0)
-    self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange")
+    self.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange")
 
     self.logoLetters = self.logo:CreateTexture("VendorLogoLetters", "OVERLAY")
     self.logoLetters:SetWidth(55)
     self.logoLetters:SetHeight(55)
     self.logoLetters:SetTexCoord(0, 1, 0, 1)
     self.logoLetters:SetPoint("TOPLEFT", 1, 2)
-    self.logoLetters:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\letters_bright")
+    self.logoLetters:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\letters_bright")
 
     -- handle highlighting of portrait
     self.logo:SetScript("OnEnter", function(frame)
         GameTooltip_SetDefaultAnchor(GameTooltip, frame)
         GameTooltip:SetText(frame.tooltipText, 1, 1, 1, 1, true)
-        self.blinkTime = nil; frame.ctrl.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange_highlight")
+        self.blinkTime = nil; frame.ctrl.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange_highlight")
     end)
     self.logo:SetScript("OnLeave", function(frame)
         GameTooltip:Hide()
-        frame.ctrl.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster\\src\\resources\\portrait_orange")
+        frame.ctrl.logoTexture:SetTexture("Interface\\Addons\\AuctionMaster_Titan\\src\\resources\\portrait_orange")
     end)
 
     -- set blinking effect

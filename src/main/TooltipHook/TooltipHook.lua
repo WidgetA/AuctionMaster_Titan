@@ -26,6 +26,14 @@ local self = vendor.TooltipHook;
 
 local log = vendor.Debug:new("TooltipHook")
 
+-- [Titan Migration] Container APIs moved to C_Container namespace
+-- [Titan Migration] C_Container.GetContainerItemInfo returns a table instead of multiple values
+local GetContainerItemInfo = GetContainerItemInfo or function(bag, slot)
+	local info = C_Container.GetContainerItemInfo(bag, slot)
+	if not info then return nil end
+	return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink, info.isFiltered, info.hasNoValue, info.itemID
+end
+
 local TOOLTIP_NAMES = {"GameTooltip", "ItemRefTooltip", "ShoppingTooltip", "AtlasLootTooltip"};
 local METHOD_NAMES = {"SetHyperlink", "SetBagItem", "SetInventoryItem", "SetAuctionItem",
 	"SetAuctionSellItem", "SetLootItem", "SetLootRollItem", "SetCraftSpell", "SetCraftItem",
